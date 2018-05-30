@@ -24,6 +24,13 @@ public class HttpClientUtil {
         try{
             httpClient = new SSLClient();
             httpPost = new HttpPost(url);
+//            httpPost.setHeader("User-Agent","Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36");
+//            httpPost.setHeader("Accept","text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8");
+//            httpPost.setHeader("Accept-Encoding","deflate, br");
+//            httpPost.setHeader("accept-language","zh-CN,zh;q=0.9");
+//            httpPost.setHeader("Accept-Language","zh-CN,zh;q=0.9");
+//            httpPost.setHeader("cache-control","max-age=0");
+//            httpPost.setHeader("Connection","keep-alive");
             //设置参数
             List<NameValuePair> list = new ArrayList<NameValuePair>();
             Iterator iterator = map.entrySet().iterator();
