@@ -4,7 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 //对接口进行测试
 public class TestMain {
-    private String url = "https://unite.nike.com/login?appVersion=431&experienceVersion=360&uxid=com.nike.commerce.nikedotcom.web&locale=zh_CN&backendEnvironment=identity&browser=Google%20Inc.&os=undefined&mobile=false&native=false&visit=1&visitor=b0e0ff72-57a6-4b4d-8380-4f773e1f667e";
+    private String url = "https://unite.nike.com/login?appVersion=431&experienceVersion=360&uxid=com.nike.commerce.nikedotcom.web&locale=zh_CN&backendEnvironment=identity&browser=Google%20Inc.&os=undefined&mobile=false&native=false&visit=1&visitor=542767df-ea1a-4f8d-8c36-b72d58c2fbb2";
     private String charset = "utf-8";
     private HttpClientUtil httpClientUtil = null;
 
@@ -21,7 +21,7 @@ public class TestMain {
         String httpOrgCreateTest = url ;//+ "httpOrg/create";
         Map<String,String> createMap = new HashMap<String,String>();
         createMap.put("username","tianshi139803@126.com");
-        createMap.put("password","liu2222233");
+        createMap.put("password","liu123456L");
         createMap.put("client_id","HlHa2Cje3ctlaOqnxvgZXNaAs7T9nAuH");
         createMap.put("ux_id","com.nike.commerce.nikedotcom.web");
         createMap.put("grant_type","password");
@@ -37,6 +37,6 @@ public class TestMain {
     }
     public static void main(String[] args){
         TestMain main = new TestMain();
-        main.openIndex();
+        main.test();
     }
 }
