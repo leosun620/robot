@@ -14,9 +14,10 @@ import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
+import org.apache.http.client.methods.HttpOptions;
 import org.apache.http.client.methods.HttpPost;
+import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.http.entity.StringEntity;
-import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.util.EntityUtils;
 
@@ -25,7 +26,7 @@ import org.apache.http.util.EntityUtils;
  */
 public class HttpClientUtil {
     private String cookies = "";
-
+    HttpClient httpClient = null;
     public void request(){
         String url = "https://www.nike.com/cn/zh_cn/";
         HttpPost httpPost = new HttpPost(url);
@@ -34,7 +35,7 @@ public class HttpClientUtil {
         System.out.println(result);
         Header[] cookieHeaders = response.getHeaders("set-cookie");
         for(Header header : cookieHeaders){
-            if(!cookies.endsWith(";")) {
+            if(!cookies.equals("") && !cookies.endsWith(";")) {
                 cookies += ";";
             }
             cookies +=header.getValue();
@@ -59,23 +60,64 @@ public class HttpClientUtil {
     }
 
     public void requestLogin1(){
-        String url = "https://unite.nike.com/login?appVersion=435&experienceVersion=361&uxid=com.nike.commerce.nikedotcom.web&locale=zh_CN&backendEnvironment=identity&browser=Google%20Inc.&os=undefined&mobile=false&native=false&visit=1&visitor=878d9bb9-ea87-424f-87db-59a66593b046";
-        HttpPost httpPost = new HttpPost(url);
-        setLoginHeader1(httpPost);
-        HttpResponse response = doPost(httpPost);
+        String url = "https://unite.nike.com/login?appVersion=435&experienceVersion=361&uxid=com.nike.commerce.nikedotcom.web&locale=zh_CN&backendEnvironment=identity&browser=Google%20Inc.&os=undefined&mobile=false&native=false&visit=2&visitor=c32921a7-1f9c-4b25-a70c-01625e013350";
+        HttpOptions httpOptions = new HttpOptions(url);
+        setLoginHeader1(httpOptions);
+        HttpResponse response = doOptions(httpOptions);
         String result = responseString(response);
+        System.out.println(result);
+        System.out.println("------------------------------------------------");
+//        Header[] cookieHeaders = response.getHeaders("set-cookie");
+//        cookies="";
+//        for(Header header : cookieHeaders){
+//            if(!cookies.endsWith(";")) {
+//                cookies += ";";
+//            }
+//            cookies +=header.getValue();
+//        }
+        reqeustLogin2(url);
+    }
+
+    private void reqeustLogin2(String url){
+        HttpPost httpPost = new HttpPost(url);
+        setLoginHeader2(httpPost);
+        String param = "{\"username\":\"tianshi139803@126.com\",\"password\":\"liu123456L\",\"client_id\":\"HlHa2Cje3ctlaOqnxvgZXNaAs7T9nAuH\",\"ux_id\":\"com.nike.commerce.nikedotcom.web\",\"grant_type\":\"password\"}";
+        setRequestPayload(httpPost,param);
+        HttpResponse httpResponse = doPost(httpPost);
+        String result = responseString(httpResponse);
+        System.out.println("-------------------------------");
         System.out.println(result);
     }
 
+    private HttpClient getHttpClient(){
+        if(httpClient == null){
+            try {
+                httpClient = new SSLClient();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
 
+        }
+        return httpClient;
+    }
 
     public HttpResponse doPost(HttpPost httpPost) {
-        HttpClient httpClient = null;
         HttpResponse response = null;
         try {
-            httpClient = new SSLClient();
             printRequest(httpPost);
-            response = httpClient.execute(httpPost);
+            response = getHttpClient().execute(httpPost);
+            printResponse(response);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+        return response;
+    }
+
+    public HttpResponse doOptions(HttpOptions httpOptions){
+        HttpResponse response = null;
+        try {
+            printRequest(httpOptions);
+            response = getHttpClient().execute(httpOptions);
             printResponse(response);
         } catch (Exception ex) {
             ex.printStackTrace();
@@ -85,16 +127,16 @@ public class HttpClientUtil {
 
     private void printResponse(HttpResponse response){
         Header[] headers = response.getAllHeaders();
-        System.out.println();
+        System.out.println("response header:");
         for(Header header : headers){
             System.out.println(header.getName() +":"+header.getValue());
         }
     }
 
 
-    private void printRequest(HttpPost httpPost){
-        Header[] requests = httpPost.getAllHeaders();
-        System.out.println();
+    private void printRequest(HttpRequestBase httpRequestBase){
+        Header[] requests = httpRequestBase.getAllHeaders();
+        System.out.println("request header:");
         for(Header request : requests){
             System.out.println(request.getName()+":"+request.getValue());
         }
@@ -103,7 +145,7 @@ public class HttpClientUtil {
     private void setRequestPayload(HttpPost httpPost,String string){
         StringEntity stringEntity = null;
         try {
-            stringEntity = new StringEntity("{\"username\":\"tianshi139803@126.com\",\"password\":\"liu123456L\",\"client_id\":\"HlHa2Cje3ctlaOqnxvgZXNaAs7T9nAuH\",\"ux_id\":\"com.nike.commerce.nikedotcom.web\",\"grant_type\":\"password\"}","utf-8");
+            stringEntity = new StringEntity(string,"utf-8");
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         }
@@ -148,21 +190,21 @@ public class HttpClientUtil {
         httpPost.setHeader("native","false");
         httpPost.setHeader("visit","2");
         httpPost.setHeader("visitor","9be0d89a-6cd2-455a-a98b-8ecb4d593ec8");
-
+        httpPost.setHeader("cookie",cookies);
     }
 
-    private void setLoginHeader1(HttpPost httpPost){
-        httpPost.setHeader(":authority","unite.nike.com");
-        httpPost.setHeader(":method","OPTIONS");
-        httpPost.setHeader(":path"," /login?appVersion=435&experienceVersion=361&uxid=com.nike.commerce.nikedotcom.web&locale=zh_CN&backendEnvironment=identity&browser=Google%20Inc.&os=undefined&mobile=false&native=false&visit=2&visitor=9be0d89a-6cd2-455a-a98b-8ecb4d593ec8");
-        httpPost.setHeader(":scheme","https");
-        httpPost.setHeader("accept","*/*");
-        httpPost.setHeader("accept-encoding","gzip, deflate, br");
-        httpPost.setHeader("accept-language","zh-CN,zh;q=0.9");
-        httpPost.setHeader("access-control-request-headers","content-type");
-        httpPost.setHeader("access-control-request-method","POST");
-        httpPost.setHeader("origin","https://www.nike.com");
-        httpPost.setHeader("user-agent","Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36");
-        httpPost.setHeader("cookie",cookies);
+    private void setLoginHeader1(HttpOptions httpOptions){
+        httpOptions.setHeader(":authority","unite.nike.com");
+        httpOptions.setHeader(":method","OPTIONS");
+        httpOptions.setHeader(":path"," /login?appVersion=435&experienceVersion=361&uxid=com.nike.commerce.nikedotcom.web&locale=zh_CN&backendEnvironment=identity&browser=Google%20Inc.&os=undefined&mobile=false&native=false&visit=2&visitor=9be0d89a-6cd2-455a-a98b-8ecb4d593ec8");
+        httpOptions.setHeader(":scheme","https");
+        httpOptions.setHeader("accept","*/*");
+        httpOptions.setHeader("accept-encoding","gzip, deflate, br");
+        httpOptions.setHeader("accept-language","zh-CN,zh;q=0.9");
+        httpOptions.setHeader("access-control-request-headers","content-type");
+        httpOptions.setHeader("access-control-request-method","POST");
+        httpOptions.setHeader("origin","https://www.nike.com");
+        httpOptions.setHeader("user-agent","Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36");
+        httpOptions.setHeader("cookie",cookies);
     }
 }
