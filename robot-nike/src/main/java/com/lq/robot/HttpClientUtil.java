@@ -14,6 +14,7 @@ import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
+import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpOptions;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpRequestBase;
@@ -29,8 +30,8 @@ public class HttpClientUtil {
     HttpClient httpClient = null;
     public void request(){
         String url = "https://www.nike.com/cn/zh_cn/";
-        HttpPost httpPost = new HttpPost(url);
-        HttpResponse response = doPost(httpPost);
+        HttpGet httpGet = new HttpGet(url);
+        HttpResponse response = doGet(httpGet,"主页");
         String result = responseString(response);
         System.out.println(result);
         Header[] cookieHeaders = response.getHeaders("set-cookie");
@@ -40,8 +41,39 @@ public class HttpClientUtil {
             }
             cookies +=header.getValue();
         }
+        requestData();
+        requestAppInit();
         requestLogin1();
     }
+
+    private void requestData() {
+        String url="https://www.nike.com/_bm/_data";
+    }
+
+    private void requestAppInit() {
+        String url = "https://unite.nike.com/appInitialization?appVersion=435&experienceVersion=361&uxid=com.nike.commerce.nikedotcom.web&locale=zh_CN&backendEnvironment=identity&browser=Google%20Inc.&os=undefined&mobile=false&native=false&visit=&visitor=&clientId=HlHa2Cje3ctlaOqnxvgZXNaAs7T9nAuH&status=success&uxId=com.nike.commerce.nikedotcom.web&isAndroid=false&isIOS=false&isMobile=false&isNative=false&timeElapsed=1459";
+        HttpGet httpGet = new HttpGet(url);
+        setAppInitHeader(httpGet);
+        HttpResponse response = doGet(httpGet,"APPinit");
+        String result = responseString(response);
+        System.out.println(result);
+
+    }
+
+    private void setAppInitHeader(HttpGet httpGet){
+        httpGet.setHeader("cookie",cookies);
+        httpGet.setHeader(":authority","unite.nike.com");
+        httpGet.setHeader(":method","GET");
+        httpGet.setHeader(":path","/appInitialization?appVersion=435&experienceVersion=361&uxid=com.nike.commerce.nikedotcom.web&locale=zh_CN&backendEnvironment=identity&browser=Google%20Inc.&os=undefined&mobile=false&native=false&visit=&visitor=&clientId=HlHa2Cje3ctlaOqnxvgZXNaAs7T9nAuH&status=success&uxId=com.nike.commerce.nikedotcom.web&isAndroid=false&isIOS=false&isMobile=false&isNative=false&timeElapsed=1459");
+        httpGet.setHeader(":scheme","https");
+        httpGet.setHeader("accept","*/*");
+        httpGet.setHeader("accept-encoding","gzip, deflate, br");
+        httpGet.setHeader("accept-language","zh-CN,zh;q=0.9");
+        httpGet.setHeader("origin","https://www.nike.com");
+        httpGet.setHeader("referer","https://www.nike.com/cn/zh_cn/");
+        httpGet.setHeader("user-agent","Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36");
+    }
+
 
     private String responseString(HttpResponse response){
         String result="";
@@ -63,7 +95,7 @@ public class HttpClientUtil {
         String url = "https://unite.nike.com/login?appVersion=435&experienceVersion=361&uxid=com.nike.commerce.nikedotcom.web&locale=zh_CN&backendEnvironment=identity&browser=Google%20Inc.&os=undefined&mobile=false&native=false&visit=2&visitor=c32921a7-1f9c-4b25-a70c-01625e013350";
         HttpOptions httpOptions = new HttpOptions(url);
         setLoginHeader1(httpOptions);
-        HttpResponse response = doOptions(httpOptions);
+        HttpResponse response = doOptions(httpOptions,"login1 ");
         String result = responseString(response);
         System.out.println(result);
         System.out.println("------------------------------------------------");
@@ -83,7 +115,7 @@ public class HttpClientUtil {
         setLoginHeader2(httpPost);
         String param = "{\"username\":\"tianshi139803@126.com\",\"password\":\"liu123456L\",\"client_id\":\"HlHa2Cje3ctlaOqnxvgZXNaAs7T9nAuH\",\"ux_id\":\"com.nike.commerce.nikedotcom.web\",\"grant_type\":\"password\"}";
         setRequestPayload(httpPost,param);
-        HttpResponse httpResponse = doPost(httpPost);
+        HttpResponse httpResponse = doPost(httpPost,"Login2 ");
         String result = responseString(httpResponse);
         System.out.println("-------------------------------");
         System.out.println(result);
@@ -101,42 +133,43 @@ public class HttpClientUtil {
         return httpClient;
     }
 
-    public HttpResponse doPost(HttpPost httpPost) {
+    public HttpResponse doPost(HttpPost httpPost,String name) {
+        return doReqeust(httpPost,name);
+    }
+
+    public HttpResponse doReqeust(HttpRequestBase httpRequestBase,String name){
         HttpResponse response = null;
         try {
-            printRequest(httpPost);
-            response = getHttpClient().execute(httpPost);
-            printResponse(response);
+            printRequest(httpRequestBase,name);
+            response = getHttpClient().execute(httpRequestBase);
+            printResponse(response,name);
         } catch (Exception ex) {
             ex.printStackTrace();
         }
         return response;
     }
 
-    public HttpResponse doOptions(HttpOptions httpOptions){
-        HttpResponse response = null;
-        try {
-            printRequest(httpOptions);
-            response = getHttpClient().execute(httpOptions);
-            printResponse(response);
-        } catch (Exception ex) {
-            ex.printStackTrace();
-        }
-        return response;
+    public HttpResponse doGet(HttpGet httpGet,String name){
+        return doReqeust(httpGet,name);
     }
 
-    private void printResponse(HttpResponse response){
+    public HttpResponse doOptions(HttpOptions httpOptions,String name){
+
+        return doReqeust(httpOptions,name);
+    }
+
+    private void printResponse(HttpResponse response,String name){
         Header[] headers = response.getAllHeaders();
-        System.out.println("response header:");
+        System.out.println(name+"response header:");
         for(Header header : headers){
             System.out.println(header.getName() +":"+header.getValue());
         }
     }
 
 
-    private void printRequest(HttpRequestBase httpRequestBase){
+    private void printRequest(HttpRequestBase httpRequestBase,String name){
         Header[] requests = httpRequestBase.getAllHeaders();
-        System.out.println("request header:");
+        System.out.println(name+"request header:");
         for(Header request : requests){
             System.out.println(request.getName()+":"+request.getValue());
         }
