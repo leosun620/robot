@@ -46,8 +46,31 @@ public class HttpClientUtil {
         requestLogin1();
     }
 
-    private void requestData() {
+    public void requestData() {
         String url="https://www.nike.com/_bm/_data";
+        HttpPost httpPost = new HttpPost(url);
+        setRequestDataHeader(httpPost);
+        String json="{\"sensor_data\":\"7a74G7m23Vrp0o5c9997216.78-6,2,-36,-495,Mozilla/9.8 (Windows NT 52.1; Win85; x70) AppleWebKit/691.17 (KHTML, like Gecko) Chrome/07.1.2890.230 Safari/484.57,uaend,93432,72189113,zh-CN,Gecko,4,6,2,1,223545,8471092,4213,933,1420,571,6018,640,7784,,cpen:1,i1:6,dm:3,cwen:6,non:3,opc:7,fc:9,sc:2,wrc:8,isc:0,vib:2,bat:3,x01:6,x93:0,5844,9.359243980899,254283913121,loc:-1,8,-75,-676,do_en,dm_en,t_en-6,2,-36,-490,-3,7,-00,-915,5,5,1,9,794,443,5;5,1,9,1,6561,0705,1;0,1,4,8,5373,098,0;-5,0,-89,-313,-2,6,-07,-862,5,1,562,2319,979;0,2,7545,629,750;2,7,37313,592,036;9,3,22149,051,545;6,2,04051,351,161;6,0,84531,885,797;5,8,30833,431,634;4,3,68376,197,342;0,6,10918,058,138;4,1,73573,897,683;11,5,90793,469,373;53,2,04176,444,008;25,6,61590,013,262;60,3,68464,143,302;35,0,25893,259,973;05,7,37521,618,939;70,9,48073,017,501;98,0,84739,975,627;03,8,24442,387,731,-3;68,5,51488,434,595,-7;48,5,66106,860,864,-0;96,2,10628,771,911;37,1,84764,814,651;24,5,01886,487,347;66,2,15350,454,080;38,6,72774,025,264;73,3,79657,130,309;48,0,36076,248,977;56,9,51582,8525,359,-3;-4,7,-15,-123,-9,5,-69,-601,6,5396,-8,-2,-1;-5,0,-89,-314,0,9793,-0,-6,-6,-2,-3,-4,-8,-2,-1;-5,0,-89,-329,-2,6,-07,-855,7,12770;4,04280;7,23572;4,28191;-0,3,-12,-069,https://www.nike.com/cn/zh_cn/-6,3,-95,-396,9,244889,1,7764,2840,1,490220,46300,2,6429891278529,34,06402,8,96,9245,2,1,75267,023483,1,8,78,053,698514960,11556331-6,2,-36,-491,6,3-0,3,-12,-066,335,136,341,097,415,236,321,097,355,136,301,097,355,596,-9,5,-69,-612,6,2,1,9,8,2,5-1,8,-75,-27,-048136396;dis;,9,3,10;true;true;true;-808;true;45;14;true;false;-6-1,8,-75,-37,7229-2,6,-07,-868,96334772-4,7,-15,-124,09274-8,4,-84,-549,;7;34;4\"}";
+        setRequestPayload(httpPost,json);
+        HttpResponse response = doPost(httpPost,"_DATA:");
+        String result = responseString(response);
+        System.out.println(result);
+    }
+
+    private void setRequestDataHeader(HttpPost httpPost) {
+        httpPost.setHeader(":authority","www.nike.com");
+        httpPost.setHeader(":method","POST");
+        httpPost.setHeader(":path","/_bm/_data");
+        httpPost.setHeader(":scheme","https");
+        httpPost.setHeader("accept","*/*");
+        httpPost.setHeader("accept-encoding","gzip, deflate, br");
+        httpPost.setHeader("accept-language","zh-CN,zh;q=0.9");
+        //httpPost.setHeader("content-length","1677");
+        httpPost.setHeader("content-type","application/json");
+        httpPost.setHeader("origin","https://www.nike.com");
+        httpPost.setHeader("referer","https://www.nike.com/cn/zh_cn/");
+        httpPost.setHeader("user-agent","Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36");
+        httpPost.setHeader("x-newrelic-id","VQYGVF5SCBAJVlFaAQIH");
     }
 
     private void requestAppInit() {
@@ -92,13 +115,13 @@ public class HttpClientUtil {
     }
 
     public void requestLogin1(){
-        String url = "https://unite.nike.com/login?appVersion=435&experienceVersion=361&uxid=com.nike.commerce.nikedotcom.web&locale=zh_CN&backendEnvironment=identity&browser=Google%20Inc.&os=undefined&mobile=false&native=false&visit=2&visitor=c32921a7-1f9c-4b25-a70c-01625e013350";
-        HttpOptions httpOptions = new HttpOptions(url);
-        setLoginHeader1(httpOptions);
-        HttpResponse response = doOptions(httpOptions,"login1 ");
-        String result = responseString(response);
-        System.out.println(result);
-        System.out.println("------------------------------------------------");
+        String url = "https://unite.nike.com/login?appVersion=435&experienceVersion=361&uxid=com.nike.commerce.nikedotcom.web&locale=zh_CN&backendEnvironment=identity&browser=Google%20Inc.&os=undefined&mobile=false&native=false&visit=1&visitor=795abd76-17ce-4eb7-aaf0-08cac96b6a73";
+        //HttpOptions httpOptions = new HttpOptions(url);
+        //setLoginHeader1(httpOptions);
+        //HttpResponse response = doOptions(httpOptions,"login1 ");
+       // String result = responseString(response);
+        //System.out.println(result);
+        //System.out.println("------------------------------------------------");
 //        Header[] cookieHeaders = response.getHeaders("set-cookie");
 //        cookies="";
 //        for(Header header : cookieHeaders){
@@ -107,10 +130,11 @@ public class HttpClientUtil {
 //            }
 //            cookies +=header.getValue();
 //        }
+        cookies = "bm_sz=F372F1C7810F2B524D63E5FCBC4CD3BA~QAAQFXfA0krGfpdjAQAAglRd07K1wZTkziIg59TC6yx1H+SoRefu3x+xoRbBZzAirFL50cgk+2hhSshuoGPsoeW9js4dyWsfrBroYANSmv9jbPaRM47A7f32VJ6qNdpqe+JFFttBdf1lrnwjn8E2IHQU3IQkUMfSW6HVOqaaRCu7CFtdbLM7XeKMtG79; ppd=homepage%7Cnikecom%3Ehomepage; _abck=22ABF3D86B51855E7D262B25789A625BD2C07715EA380000AB63175B489E9F23~0~Fi+rb9T4YQUU5+jI2E2uVFR+mtL5GOAOIqUGGqok7e0=~-1~-1; s_sess=%20prevList2%3D%3B%20tp%3D4301%3B%20s_ppv%3Dnikecom%25253Ehomepage%252C15%252C13%252C644%3B; s_pers=%20c58%3Dno%2520value%7C1528261372956%3B";
         reqeustLogin2(url);
     }
 
-    private void reqeustLogin2(String url){
+    public void reqeustLogin2(String url){
         HttpPost httpPost = new HttpPost(url);
         setLoginHeader2(httpPost);
         String param = "{\"username\":\"tianshi139803@126.com\",\"password\":\"liu123456L\",\"client_id\":\"HlHa2Cje3ctlaOqnxvgZXNaAs7T9nAuH\",\"ux_id\":\"com.nike.commerce.nikedotcom.web\",\"grant_type\":\"password\"}";
@@ -177,11 +201,7 @@ public class HttpClientUtil {
 
     private void setRequestPayload(HttpPost httpPost,String string){
         StringEntity stringEntity = null;
-        try {
-            stringEntity = new StringEntity(string,"utf-8");
-        } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
-        }
+        stringEntity = new StringEntity(string,"utf-8");
         httpPost.setEntity(stringEntity);
     }
 
@@ -208,7 +228,7 @@ public class HttpClientUtil {
         httpPost.setHeader("accept-encoding","gzip, deflate, br");
         httpPost.setHeader("accept-language","zh-CN,zh;q=0.9");
         httpPost.setHeader("content-type","application/json");
-        httpPost.setHeader("cookie","AnalysisUserId=210.192.119.45.53631527566944881; NIKE_COMMERCE_COUNTRY=CN; NIKE_COMMERCE_LANG_LOCALE=zh_CN; guidU=4ca6bd2c-1098-4fc7-b190-f1b04fec2428; neo.swimlane=51; dreams_sample=47; _gscu_207448657=275669547dl0db71; ajs_user_id=null; ajs_group_id=null; ajs_anonymous_id=%220b3e7d9a-34c9-4fe3-a8b0-79bbd3fa2ecf%22; _smt_uid=5b0cd26a.43b13900; RES_TRACKINGID=313986637794354; ResonanceSegment=1; NIKE_COMMERCE_CCR=1527567080044; CONSUMERCHOICE_SESSION=t; CONSUMERCHOICE=cn/zh_cn; siteCatalyst_sample=61; dreamcatcher_sample=25; neo_sample=62; neo.experiments=%7B%22main%22%3A%7B%223698-interceptor%22%3A%22a%22%7D%2C%22snkrs%22%3A%7B%7D%2C%22ocp%22%3A%7B%7D%7D; lls=3; _abck=9DBBDD054807383F131FFB0CEC6AA813D2C0772DF314000060D20C5B7AFAA738~0~1kLnceily3bJSJ9Q4OdzoKXWFf5BZhJD132poroMB1w=~-1~-1; bm_sz=6D21E0C8EF698546AA219356595EEBE4~QAAQFXfA0iu2dJdjAQAAFNL9yAeT4AgoENECJPQNQ/9KxYmO9yhylZAx4Bg306OswND5o+5GUxNCKzKgsbU0Uit/vDGMp/iwJYGcFsjRO8HePwAFB8D7y3hRqyqh+iuMgOFi886wqHCBD2y/y3h1les7dO87zKtB/rysk/O5evB+9jLsAzJukyfZWkAI; ak_bmsc=80095E436FE6EC9549D601A2E1B21633D2C07715EA380000DBBB145BEC58A950~pl5coT6Lm3YQlltEqJ7jnTU/W8QLOdWqHkTxbYRAg9Ye6Yc9LeZ3VwWIByjLzEhtxmVKf706FbdbspKq32Ov+r/P3J4okTbgB3fbV7/HVArIXSmjzxh0ITJX5kgcIHVgh2msFGAIdnlf+7aRgqjiA4XjecBFt4jP+u+9MBN1gUyROIDWVN01MBW6jGFh7Dm5hbazReqVMEEyLLM5jDwCb58cfff8jHgEhf38t19jHPoRntipgO7iSj12yNNaduKbpx9MfPeSBV01p/pLIgOTUjgjXwlS1m098b95Wn+FxMpW8UYojRMVqQRxaIfaMllp/HV97zJSzEZR+6pKrKgkjaEg==; AKA_A2=A; nike_locale=cn/zh_cn; mm_wc_pmt=1; guidS=17287095-d328-43ef-d48e-c0214162a5ed; _gscbrs_207448657=1; AMCVS_F0935E09512D2C270A490D4D%40AdobeOrg=1; AMCV_F0935E09512D2C270A490D4D%40AdobeOrg=2121618341%7CMCIDTS%7C17686%7CMCMID%7C35431566262966316330772367245609357384%7CMCAAMLH-1528258366%7C11%7CMCAAMB-1528690293%7CRKhpRz8krg2tLO6pguXWp5olkAcUniQYPHaMWWgdJ3xzPWQmdj0y%7CMCOPTOUT-1528092693s%7CNONE%7CMCAID%7CNONE; utag_main=_st:1528087425505$ses_id:1528085983222%3Bexp-session; guidSTimestamp=1528085471108|1528085626245; _gscs_207448657=28085491rphrtd71|pv:3; bm_sv=512C7D0A95B6DBB833AD9C9618404321~/ySNlifPFUcUZ/acoJoBOpYJf154hbzuazUpnPDFt3juyXda2Ce1UpoKb6GLIZlJ7d0gFniHU4I77ZDPDq0Af43BPEUC8Lzw5daI/QVdn6eJeizgYJOh32VoldbZuTnM3DFsu2J2awIABOkThyaMGQ==; exp.swoosh.user=%7B%22granted%22%3A0%7D; RES_SESSIONID=335318428634909; ppd=homepage%7Cnikecom%3Ehomepage; RT=\"dm=nike.com&si=05859b72-8963-4e6b-a58c-2a2409248fe5&ss=1528085467526&sl=3&tt=60558&obo=0&sh=1528085639038%3D3%3A0%3A60558%2C1528085595217%3D2%3A0%3A47061%2C1528085491128%3D1%3A0%3A23596&bcn=%2F%2F36fb6d10.akstat.io%2F\"; s_sess=%20c51%3Dhorizontal%3B%20s_cc%3Dtrue%3B%20tp%3D4301%3B%20prevList2%3D%3B%20s_ppv%3Dunified%252520profile%25253Elogin%252C9%252C9%252C400%3B; s_pers=%20s_dfa%3Dnikecomprod%7C1528087425962%3B%20c58%3Dno%2520value%7C1528087599037%3B");
+        //httpPost.setHeader("cookie","AnalysisUserId=210.192.119.45.53631527566944881; NIKE_COMMERCE_COUNTRY=CN; NIKE_COMMERCE_LANG_LOCALE=zh_CN; guidU=4ca6bd2c-1098-4fc7-b190-f1b04fec2428; neo.swimlane=51; dreams_sample=47; _gscu_207448657=275669547dl0db71; ajs_user_id=null; ajs_group_id=null; ajs_anonymous_id=%220b3e7d9a-34c9-4fe3-a8b0-79bbd3fa2ecf%22; _smt_uid=5b0cd26a.43b13900; RES_TRACKINGID=313986637794354; ResonanceSegment=1; NIKE_COMMERCE_CCR=1527567080044; CONSUMERCHOICE_SESSION=t; CONSUMERCHOICE=cn/zh_cn; siteCatalyst_sample=61; dreamcatcher_sample=25; neo_sample=62; neo.experiments=%7B%22main%22%3A%7B%223698-interceptor%22%3A%22a%22%7D%2C%22snkrs%22%3A%7B%7D%2C%22ocp%22%3A%7B%7D%7D; lls=3; _abck=9DBBDD054807383F131FFB0CEC6AA813D2C0772DF314000060D20C5B7AFAA738~0~1kLnceily3bJSJ9Q4OdzoKXWFf5BZhJD132poroMB1w=~-1~-1; bm_sz=6D21E0C8EF698546AA219356595EEBE4~QAAQFXfA0iu2dJdjAQAAFNL9yAeT4AgoENECJPQNQ/9KxYmO9yhylZAx4Bg306OswND5o+5GUxNCKzKgsbU0Uit/vDGMp/iwJYGcFsjRO8HePwAFB8D7y3hRqyqh+iuMgOFi886wqHCBD2y/y3h1les7dO87zKtB/rysk/O5evB+9jLsAzJukyfZWkAI; ak_bmsc=80095E436FE6EC9549D601A2E1B21633D2C07715EA380000DBBB145BEC58A950~pl5coT6Lm3YQlltEqJ7jnTU/W8QLOdWqHkTxbYRAg9Ye6Yc9LeZ3VwWIByjLzEhtxmVKf706FbdbspKq32Ov+r/P3J4okTbgB3fbV7/HVArIXSmjzxh0ITJX5kgcIHVgh2msFGAIdnlf+7aRgqjiA4XjecBFt4jP+u+9MBN1gUyROIDWVN01MBW6jGFh7Dm5hbazReqVMEEyLLM5jDwCb58cfff8jHgEhf38t19jHPoRntipgO7iSj12yNNaduKbpx9MfPeSBV01p/pLIgOTUjgjXwlS1m098b95Wn+FxMpW8UYojRMVqQRxaIfaMllp/HV97zJSzEZR+6pKrKgkjaEg==; AKA_A2=A; nike_locale=cn/zh_cn; mm_wc_pmt=1; guidS=17287095-d328-43ef-d48e-c0214162a5ed; _gscbrs_207448657=1; AMCVS_F0935E09512D2C270A490D4D%40AdobeOrg=1; AMCV_F0935E09512D2C270A490D4D%40AdobeOrg=2121618341%7CMCIDTS%7C17686%7CMCMID%7C35431566262966316330772367245609357384%7CMCAAMLH-1528258366%7C11%7CMCAAMB-1528690293%7CRKhpRz8krg2tLO6pguXWp5olkAcUniQYPHaMWWgdJ3xzPWQmdj0y%7CMCOPTOUT-1528092693s%7CNONE%7CMCAID%7CNONE; utag_main=_st:1528087425505$ses_id:1528085983222%3Bexp-session; guidSTimestamp=1528085471108|1528085626245; _gscs_207448657=28085491rphrtd71|pv:3; bm_sv=512C7D0A95B6DBB833AD9C9618404321~/ySNlifPFUcUZ/acoJoBOpYJf154hbzuazUpnPDFt3juyXda2Ce1UpoKb6GLIZlJ7d0gFniHU4I77ZDPDq0Af43BPEUC8Lzw5daI/QVdn6eJeizgYJOh32VoldbZuTnM3DFsu2J2awIABOkThyaMGQ==; exp.swoosh.user=%7B%22granted%22%3A0%7D; RES_SESSIONID=335318428634909; ppd=homepage%7Cnikecom%3Ehomepage; RT=\"dm=nike.com&si=05859b72-8963-4e6b-a58c-2a2409248fe5&ss=1528085467526&sl=3&tt=60558&obo=0&sh=1528085639038%3D3%3A0%3A60558%2C1528085595217%3D2%3A0%3A47061%2C1528085491128%3D1%3A0%3A23596&bcn=%2F%2F36fb6d10.akstat.io%2F\"; s_sess=%20c51%3Dhorizontal%3B%20s_cc%3Dtrue%3B%20tp%3D4301%3B%20prevList2%3D%3B%20s_ppv%3Dunified%252520profile%25253Elogin%252C9%252C9%252C400%3B; s_pers=%20s_dfa%3Dnikecomprod%7C1528087425962%3B%20c58%3Dno%2520value%7C1528087599037%3B");
         httpPost.setHeader("origin","https://www.nike.com");
         httpPost.setHeader("referer","https://www.nike.com/cn/zh_cn/");
         httpPost.setHeader("user-agent","Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36");

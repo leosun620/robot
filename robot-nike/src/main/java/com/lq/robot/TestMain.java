@@ -24,7 +24,7 @@ public class TestMain {
         createMap.put("client_id","HlHa2Cje3ctlaOqnxvgZXNaAs7T9nAuH");
         createMap.put("ux_id","com.nike.commerce.nikedotcom.web");
         createMap.put("grant_type","password");*/
-        httpClientUtil.request();
+        httpClientUtil.requestLogin1();
         //System.out.println("result:"+httpOrgCreateTestRtn);
     }
 
