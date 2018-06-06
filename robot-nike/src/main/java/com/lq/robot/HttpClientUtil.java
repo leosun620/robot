@@ -12,13 +12,18 @@ import org.apache.http.Header;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
+import org.apache.http.client.CookieStore;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpOptions;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpRequestBase;
+import org.apache.http.client.protocol.HttpClientContext;
+import org.apache.http.cookie.Cookie;
 import org.apache.http.entity.StringEntity;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClients;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.util.EntityUtils;
 
@@ -26,35 +31,54 @@ import org.apache.http.util.EntityUtils;
  * 利用HttpClient进行post请求的工具类
  */
 public class HttpClientUtil {
-    private String cookies = "";
-    HttpClient httpClient = null;
+    //private String cookies = "RT=\"sl=0&ss=1528301203177&tt=0&obo=0&bcn=%2F%2F36fb68c2.akstat.io%2F&sh=&dm=nike.com&si=9e40fbb3-f707-4bbc-9792-ad5303028ad9&r=https%3A%2F%2Fwww.nike.com%2Fcn%2Fzh_cn%2F&ul=1528301246911\"";
+    private CookieStore cookieStore = null;
+    //创建一个HttpContext对象，用来保存Cookie
+    //HttpClientContext httpClientContext = HttpClientContext.create();
+    SSLClient httpClient ;
     public void request(){
         String url = "https://www.nike.com/cn/zh_cn/";
         HttpGet httpGet = new HttpGet(url);
+        setIndexPageHeader(httpGet);
         HttpResponse response = doGet(httpGet,"主页");
         String result = responseString(response);
-        System.out.println(result);
-        Header[] cookieHeaders = response.getHeaders("set-cookie");
-        for(Header header : cookieHeaders){
-            if(!cookies.equals("") && !cookies.endsWith(";")) {
-                cookies += ";";
-            }
-            cookies +=header.getValue();
-        }
+        //System.out.println(result);
+        //cookieStore = httpClient.getCookieStore();
+       // Header[] cookieHeaders = response.getHeaders("set-cookie");
+        //for(Header header : cookieHeaders){
+//            if(!cookies.equals("") && !cookies.endsWith(";")) {
+//                cookies += ";";
+//            }
+//            cookies +=header.getValue();
+//        }
         requestData();
         requestAppInit();
         requestLogin1();
+    }
+
+    private void setIndexPageHeader(HttpGet httpGet) {
+        //httpGet.setHeader("Cookie",cookies);
+        httpGet.setHeader("Accept","text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8");
+        httpGet.setHeader("Accept-Encoding","gzip, deflate, br");
+        httpGet.setHeader("Accept-Language","zh-CN,zh;q=0.9");
+        httpGet.setHeader("Cache-Control","max-age=0");
+        httpGet.setHeader("Connection","keep-alive");
+        httpGet.setHeader("Cookie","RT=\"sl=0&ss=1528301203177&tt=0&obo=0&bcn=%2F%2F36fb68c2.akstat.io%2F&sh=&dm=nike.com&si=9e40fbb3-f707-4bbc-9792-ad5303028ad9&r=https%3A%2F%2Fwww.nike.com%2Fcn%2Fzh_cn%2F&ul=1528301246911\"");
+        httpGet.setHeader("Host","www.nike.com");
+        httpGet.setHeader("Upgrade-Insecure-Requests","1");
+        httpGet.setHeader("User-Agent","Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/62.0.3202.75 Safari/537.36");
     }
 
     public void requestData() {
         String url="https://www.nike.com/_bm/_data";
         HttpPost httpPost = new HttpPost(url);
         setRequestDataHeader(httpPost);
-        String json="{\"sensor_data\":\"7a74G7m23Vrp0o5c9997216.78-6,2,-36,-495,Mozilla/9.8 (Windows NT 52.1; Win85; x70) AppleWebKit/691.17 (KHTML, like Gecko) Chrome/07.1.2890.230 Safari/484.57,uaend,93432,72189113,zh-CN,Gecko,4,6,2,1,223545,8471092,4213,933,1420,571,6018,640,7784,,cpen:1,i1:6,dm:3,cwen:6,non:3,opc:7,fc:9,sc:2,wrc:8,isc:0,vib:2,bat:3,x01:6,x93:0,5844,9.359243980899,254283913121,loc:-1,8,-75,-676,do_en,dm_en,t_en-6,2,-36,-490,-3,7,-00,-915,5,5,1,9,794,443,5;5,1,9,1,6561,0705,1;0,1,4,8,5373,098,0;-5,0,-89,-313,-2,6,-07,-862,5,1,562,2319,979;0,2,7545,629,750;2,7,37313,592,036;9,3,22149,051,545;6,2,04051,351,161;6,0,84531,885,797;5,8,30833,431,634;4,3,68376,197,342;0,6,10918,058,138;4,1,73573,897,683;11,5,90793,469,373;53,2,04176,444,008;25,6,61590,013,262;60,3,68464,143,302;35,0,25893,259,973;05,7,37521,618,939;70,9,48073,017,501;98,0,84739,975,627;03,8,24442,387,731,-3;68,5,51488,434,595,-7;48,5,66106,860,864,-0;96,2,10628,771,911;37,1,84764,814,651;24,5,01886,487,347;66,2,15350,454,080;38,6,72774,025,264;73,3,79657,130,309;48,0,36076,248,977;56,9,51582,8525,359,-3;-4,7,-15,-123,-9,5,-69,-601,6,5396,-8,-2,-1;-5,0,-89,-314,0,9793,-0,-6,-6,-2,-3,-4,-8,-2,-1;-5,0,-89,-329,-2,6,-07,-855,7,12770;4,04280;7,23572;4,28191;-0,3,-12,-069,https://www.nike.com/cn/zh_cn/-6,3,-95,-396,9,244889,1,7764,2840,1,490220,46300,2,6429891278529,34,06402,8,96,9245,2,1,75267,023483,1,8,78,053,698514960,11556331-6,2,-36,-491,6,3-0,3,-12,-066,335,136,341,097,415,236,321,097,355,136,301,097,355,596,-9,5,-69,-612,6,2,1,9,8,2,5-1,8,-75,-27,-048136396;dis;,9,3,10;true;true;true;-808;true;45;14;true;false;-6-1,8,-75,-37,7229-2,6,-07,-868,96334772-4,7,-15,-124,09274-8,4,-84,-549,;7;34;4\"}";
+        String json="{\"sensor_data\":\"7a74G7m23Vrp0o5c9997316.78-6,2,-36,-495,Mozilla/9.8 (Windows NT 0.9) AppleWebKit/718.21 (KHTML, like Gecko) Chrome/75.5.8417.76 Safari/289.85,uaend,40366,35931749,zh-CN,Gecko,0,2,1,9,028182,7159694,6932,250,7608,195,5,1,0296,,cpen:7,i2:9,dm:2,cwen:6,non:2,opc:3,fc:2,sc:1,wrc:4,isc:1,vib:5,bat:6,x32:9,x76:9,0367,2.68143683424,416297264368,loc:-3,7,-00,-914,do_en,dm_en,t_en-8,4,-84,-523,-0,9,-09,-266,-2,1,-46,-009,-3,3,-41,-269,-7,4,-23,-638,-1,8,-75,-686,-6,2,-36,-494,-3,7,-00,-927,-8,4,-84,-521,-0,9,-09,-276,https://unite.nike.com/session.html-6,7,-43,-757,1,9,7,2,5,0,6,6,1,0093401418422,-284641,65355,2,1,1299,1,9,25,2,1,A598D031C99A7EC43C4F1384CBE0560DD7C59555422B2813136F370BBD47AF2F~-8~pdA9o3YVgjhgxQCJ6BQkxDzSJvYxFSOcGqL+J1RMdqk=~5~-3,3126,-3,-4,87782179-7,4,-23,-627,9,1-5,0,-89,-324,-2-5,0,-89,-337,0,6,2,1,0,7,2-6,2,-36,-09,-6-2,1,-58,-93,41-3,7,-00,-929,092153418-5,0,-89,-323,40171-2,1,-46,-022,;27;-1;10\"}";
         setRequestPayload(httpPost,json);
         HttpResponse response = doPost(httpPost,"_DATA:");
         String result = responseString(response);
         System.out.println(result);
+
     }
 
     private void setRequestDataHeader(HttpPost httpPost) {
@@ -66,6 +90,7 @@ public class HttpClientUtil {
         httpPost.setHeader("accept-encoding","gzip, deflate, br");
         httpPost.setHeader("accept-language","zh-CN,zh;q=0.9");
         //httpPost.setHeader("content-length","1677");
+        //httpPost.setHeader("Cookie" ,getCookies());
         httpPost.setHeader("content-type","application/json");
         httpPost.setHeader("origin","https://www.nike.com");
         httpPost.setHeader("referer","https://www.nike.com/cn/zh_cn/");
@@ -84,7 +109,7 @@ public class HttpClientUtil {
     }
 
     private void setAppInitHeader(HttpGet httpGet){
-        httpGet.setHeader("cookie",cookies);
+       // httpGet.setHeader("Cookie",getCookies());
         httpGet.setHeader(":authority","unite.nike.com");
         httpGet.setHeader(":method","GET");
         httpGet.setHeader(":path","/appInitialization?appVersion=435&experienceVersion=361&uxid=com.nike.commerce.nikedotcom.web&locale=zh_CN&backendEnvironment=identity&browser=Google%20Inc.&os=undefined&mobile=false&native=false&visit=&visitor=&clientId=HlHa2Cje3ctlaOqnxvgZXNaAs7T9nAuH&status=success&uxId=com.nike.commerce.nikedotcom.web&isAndroid=false&isIOS=false&isMobile=false&isNative=false&timeElapsed=1459");
@@ -115,13 +140,13 @@ public class HttpClientUtil {
     }
 
     public void requestLogin1(){
-        String url = "https://unite.nike.com/login?appVersion=435&experienceVersion=361&uxid=com.nike.commerce.nikedotcom.web&locale=zh_CN&backendEnvironment=identity&browser=Google%20Inc.&os=undefined&mobile=false&native=false&visit=1&visitor=795abd76-17ce-4eb7-aaf0-08cac96b6a73";
-        //HttpOptions httpOptions = new HttpOptions(url);
-        //setLoginHeader1(httpOptions);
-        //HttpResponse response = doOptions(httpOptions,"login1 ");
-       // String result = responseString(response);
-        //System.out.println(result);
-        //System.out.println("------------------------------------------------");
+        String url = "https://unite.nike.com/login?appVersion=435&experienceVersion=361&uxid=com.nike.commerce.nikedotcom.web&locale=zh_CN&backendEnvironment=identity&browser=Google%20Inc.&os=undefined&mobile=false&native=false&visit=1&visitor=7debb18f-2178-4b47-b656-ed217bbb2808";
+        HttpOptions httpOptions = new HttpOptions(url);
+        setLoginHeader1(httpOptions);
+        HttpResponse response = doOptions(httpOptions,"login1 ");
+        String result = responseString(response);
+        System.out.println(result);
+        System.out.println("------------------------------------------------");
 //        Header[] cookieHeaders = response.getHeaders("set-cookie");
 //        cookies="";
 //        for(Header header : cookieHeaders){
@@ -130,7 +155,7 @@ public class HttpClientUtil {
 //            }
 //            cookies +=header.getValue();
 //        }
-        cookies = "bm_sz=F372F1C7810F2B524D63E5FCBC4CD3BA~QAAQFXfA0krGfpdjAQAAglRd07K1wZTkziIg59TC6yx1H+SoRefu3x+xoRbBZzAirFL50cgk+2hhSshuoGPsoeW9js4dyWsfrBroYANSmv9jbPaRM47A7f32VJ6qNdpqe+JFFttBdf1lrnwjn8E2IHQU3IQkUMfSW6HVOqaaRCu7CFtdbLM7XeKMtG79; ppd=homepage%7Cnikecom%3Ehomepage; _abck=22ABF3D86B51855E7D262B25789A625BD2C07715EA380000AB63175B489E9F23~0~Fi+rb9T4YQUU5+jI2E2uVFR+mtL5GOAOIqUGGqok7e0=~-1~-1; s_sess=%20prevList2%3D%3B%20tp%3D4301%3B%20s_ppv%3Dnikecom%25253Ehomepage%252C15%252C13%252C644%3B; s_pers=%20c58%3Dno%2520value%7C1528261372956%3B";
+        //cookies = "AnalysisUserId=509e0559.56de5f2cd9706; bm_sz=DA557834BA54EF937C66CAB102F46E5E~QAAQH3fA0qmEirhjAQAAudVU1fDH+y9MBDzH1f9QiOOMlS6kd9T1v+QcxzNd95vyPSNw6ELHYmQASJdjdYLhxnr39e10SEgqzh2sh5YFqBcqfHNA/neUJgsYefwVLa8GrEJfv9Jk8qMYuob3/YGpxC/15dGxUzLPsoqOKxxre54jh8cfMOEjormlB73g; ak_bmsc=C11B42E60FFF525C3E65275D7618608BD2C0771F2D30000090E4175B3F409C38~plzXImkmrVDS0zEK0vLu70mV0SnYaSSNbk0VLvnQMjkOkDW8Cmy2WE/teCxKZtJ3qJvnmKZ85MyVt3guLmaGvSy68h226n4VKW1KjxLw7eQO0dfaTqMB77wB5EnlwKvYqLRWD47VX2v/WnGs2TS+V+Kgdhgu4Qf+DJ7CgcAOGpRdsfXIfn1SPyjw5vHEjiVdBAgBpvT6pV95fiZOJew77ue6GZtuHwD9Xmv4l4PSjmWBvJ5dHfs7RtkRBwKstHDaMJ+f8l0j40B1IYqruC9fE1KBpLK6jP3SEkrVXfytm2oYjGgH3FaFlFrJ0Bz7aOF+RLq5jNjvyvRZuHT4J655a/Sg==; AKA_A2=A; NIKE_COMMERCE_COUNTRY=CN; NIKE_COMMERCE_LANG_LOCALE=zh_CN; nike_locale=cn/zh_cn; guidU=4ff378ed-6375-4dd5-a8d6-7bfda375b42b; neo.swimlane=41; dreams_sample=55; guidS=3a710196-1bcc-44f0-e10e-769e195a7098; AMCVS_F0935E09512D2C270A490D4D%40AdobeOrg=1; AMCV_F0935E09512D2C270A490D4D%40AdobeOrg=2121618341%7CMCMID%7C48759906085072709082068505081692928310%7CMCAAMLH-1528897326%7C11%7CMCAAMB-1528897326%7CRKhpRz8krg2tLO6pguXWp5olkAcUniQYPHaMWWgdJ3xzPWQmdj0y%7CMCOPTOUT-1528299726s%7CNONE%7CMCAID%7CNONE; ajs_anonymous_id=%22e8f605f4-f47f-44ae-b980-0f8a53ea95eb%22; RES_TRACKINGID=997212644527297; NIKE_COMMERCE_CCR=1528292806954; CONSUMERCHOICE_SESSION=t; CONSUMERCHOICE=cn/zh_cn; slCheck=yCHgIDBDljFtxMwP7MCPwOPXL+M6kndrrvS6b3oUt9T8tqFVHNDLGdQsZRR3DDVAgRsqWxnhfAZk7GiAmqGh8SeWsdwPTrytt6U6uZKqM4kf+pR6lumthvxfArvPntlU; lls=3; llCheck=zHVuwtujtq3eTjk5eaeB5mk/+PaDmqmIbj9TdypLibZIuWV739LYGFYIfxOFfMsgaUuqjoSheKa9ZgNHE/kM/wbrPvZeG9px/xM9L8v9lIBBEreX51fDPqFeHe5FyvPqdoK314ZbGqEn8k3D3zWCtQMwt47IDNDSqzox4rVSiUs=; APID=80F3F84B99BAED12F09CBD1F90FB5578.sin-343-app-ap-0; _abck=A023D982C83A5EC14C7F9235CBE6389DD2C07406416B0000289F165BBD83AF1F~0~Za1E1J2nVGxBiWqU3jsxZh7s9TcUu7NSHD0s4K5adHY=~-1~-1; sls=3; CART_SUMMARY=%7B%22profileId%22+%3A%2278fe6469-1a4e-422f-8f8e-1d81532f0e0f%22%2C%22userType%22+%3A%22DEFAULT_USER%22%2C%22securityStatus%22+%3A%224%22%2C%22cartCount%22+%3A0%7D; exp.swoosh.user=%7B%22granted%22%3A0%7D; s_sess=%20tp%3D3997%3B%20s_ppv%3Dnikecom%25253Ehomepage%252C4%252C4%252C150%3B%20c51%3Dhorizontal%3B%20prevList2%3D%3B%20s_cc%3Dtrue%3B; ResonanceSegment=1; RES_SESSIONID=943208289622958; ppd=homepage%7Cnikecom%3Ehomepage; _gscu_207448657=27685784hwd2np14; _gscs_207448657=28292528g6nzk814|pv:10; _gscbrs_207448657=1; _smt_uid=5b17e4b1.10445faa; ajs_group_id=null; ajs_user_id=null; bm_sv=BFA1C323FB471E9B810BCE3BB8FC1335~Cw4tHLnHc/S/fcc8eS5wIWIUVHap+63H6IUnzwpA/NJGRQgcvrWLTnlIJS/nSZzGDzCpO58gfX0j/RgtXUAQOD9032l4D00BIA8CC1gGt8JpxRLoeluqI3l9lWaB3lnSHbmH3Ng1kJD7lI9luzxWOv+LHkA/urRIXgX/Pncqutw=; RT=\"sl=10&ss=1528292501120&tt=190909&obo=0&sh=1528294881894%3D10%3A0%3A190909%2C1528294836461%3D9%3A0%3A184860%2C1528294685133%3D8%3A0%3A172662%2C1528294626124%3D7%3A0%3A164168%2C1528294490007%3D6%3A0%3A155309&dm=nike.com&si=9e40fbb3-f707-4bbc-9792-ad5303028ad9&bcn=%2F%2F36fb6d10.akstat.io%2F&r=https%3A%2F%2Fwww.nike.com%2Fcn%2Fzh_cn%2F&ul=1528294961706&hd=1528294962118\"; utag_main=_st:1528296763692$ses_id:1528293118809%3Bexp-session; s_pers=%20c58%3Dno%2520value%7C1528296682069%3B%20s_dfa%3Dnikecomprod%7C1528296763978%3B; mm_wc_pmt=1; neo.experiments=%7B%22main%22%3A%7B%223698-interceptor%22%3A%22a%22%7D%7D; guidSTimestamp=1528292523175|1528294964932";
         reqeustLogin2(url);
     }
 
@@ -145,14 +170,13 @@ public class HttpClientUtil {
         System.out.println(result);
     }
 
-    private HttpClient getHttpClient(){
-        if(httpClient == null){
-            try {
-                httpClient = new SSLClient();
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
+    private SSLClient getHttpClient(){
+         try {
+            httpClient = new SSLClient();
+            httpClient.setCookieStore(cookieStore);
 
+        } catch (Exception e) {
+            e.printStackTrace();
         }
         return httpClient;
     }
@@ -164,8 +188,11 @@ public class HttpClientUtil {
     public HttpResponse doReqeust(HttpRequestBase httpRequestBase,String name){
         HttpResponse response = null;
         try {
-            printRequest(httpRequestBase,name);
+
             response = getHttpClient().execute(httpRequestBase);
+            cookieStore = httpClient.getCookieStore();
+            System.out.println(httpClient);
+            printRequest(httpRequestBase,name);
             printResponse(response,name);
         } catch (Exception ex) {
             ex.printStackTrace();
@@ -184,6 +211,7 @@ public class HttpClientUtil {
 
     private void printResponse(HttpResponse response,String name){
         Header[] headers = response.getAllHeaders();
+        System.out.println("-------------------");
         System.out.println(name+"response header:");
         for(Header header : headers){
             System.out.println(header.getName() +":"+header.getValue());
@@ -222,7 +250,7 @@ public class HttpClientUtil {
     private void setLoginHeader2(HttpPost httpPost) {
         httpPost.setHeader(":authority","unite.nike.com");
         httpPost.setHeader(":method","POST");
-        httpPost.setHeader(":path","/login?appVersion=435&experienceVersion=361&uxid=com.nike.commerce.nikedotcom.web&locale=zh_CN&backendEnvironment=identity&browser=Google%20Inc.&os=undefined&mobile=false&native=false&visit=1&visitor=878d9bb9-ea87-424f-87db-59a66593b046");
+        httpPost.setHeader(":path","/login?appVersion=435&experienceVersion=361&uxid=com.nike.commerce.nikedotcom.web&locale=zh_CN&backendEnvironment=identity&browser=Google%20Inc.&os=undefined&mobile=false&native=false&visit=1&visitor=7debb18f-2178-4b47-b656-ed217bbb2808");
         httpPost.setHeader(":scheme","https");
         httpPost.setHeader("accept","*/*");
         httpPost.setHeader("accept-encoding","gzip, deflate, br");
@@ -241,11 +269,19 @@ public class HttpClientUtil {
         httpPost.setHeader("os","undefined");
         httpPost.setHeader("mobile","false");
         httpPost.setHeader("native","false");
-        httpPost.setHeader("visit","2");
-        httpPost.setHeader("visitor","9be0d89a-6cd2-455a-a98b-8ecb4d593ec8");
-        httpPost.setHeader("cookie",cookies);
+        httpPost.setHeader("visit","1");
+        httpPost.setHeader("visitor","7debb18f-2178-4b47-b656-ed217bbb2808");
+
+       // httpPost.setHeader("Cookie",getCookies());
     }
 
+   /* private String getCookies(){
+        cookies = "";
+        for(Cookie cookie : cookieStore.getCookies()){
+            cookies = cookies+ cookie.getName()+"="+cookie.getValue()+";";
+        }
+        return  cookies;
+    }*/
     private void setLoginHeader1(HttpOptions httpOptions){
         httpOptions.setHeader(":authority","unite.nike.com");
         httpOptions.setHeader(":method","OPTIONS");
@@ -258,6 +294,6 @@ public class HttpClientUtil {
         httpOptions.setHeader("access-control-request-method","POST");
         httpOptions.setHeader("origin","https://www.nike.com");
         httpOptions.setHeader("user-agent","Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36");
-        httpOptions.setHeader("cookie",cookies);
+        //httpOptions.setHeader("Cookie",getCookies());
     }
 }
