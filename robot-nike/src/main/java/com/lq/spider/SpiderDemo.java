@@ -52,13 +52,16 @@ public class SpiderDemo implements PageProcessor {
         WebDriverWait wait = new WebDriverWait(driver, 10);
         wait.until(ExpectedConditions.presenceOfElementLocated(By.className("login-text")));
 
+        //PhantomJSDriver.(driver);
+
         driver.findElement(By.className("login-text")).click();
 
         //在******中填你的用户名
+        wait.until(ExpectedConditions.presenceOfElementLocated(By.xpath("//input[@data-componentname='emailAddress']")));
         WebElement userNameElement = driver.findElement(By.xpath("//input[@data-componentname='emailAddress']"));
         System.out.println(userNameElement.toString());
         userNameElement.sendKeys("tianshi139803@126.com");
-
+        wait.until(ExpectedConditions.presenceOfElementLocated(By.xpath("//input[@data-componentname='password']")));
         WebElement passwordElement = driver.findElement(By.xpath("//input[@data-componentname='password']"));
         //在*******填你密码
         passwordElement.sendKeys("liu123456L");
