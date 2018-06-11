@@ -77,11 +77,11 @@ public class SpiderDemo implements PageProcessor {
 
         //在******中填你的用户名
         //wait.until(ExpectedConditions.presenceOfElementLocated(By.xpath("//input[@data-componentname='emailAddress']")));
-        WebElement userNameElement = wait.until(ExpectedConditions.elementToBeClickable(By.xpath("//input[@name='emailAddress']")));
+        WebElement userNameElement = wait.until(ExpectedConditions.presenceOfElementLocated(By.xpath("//input[@data-componentname='emailAddress']")));
         System.out.println(userNameElement.toString());
         userNameElement.sendKeys("tianshi139803@126.com");
         //wait.until(ExpectedConditions.presenceOfElementLocated(By.xpath("//input[@data-componentname='password']")));
-        WebElement passwordElement = wait.until(ExpectedConditions.elementToBeClickable(By.xpath("//input[@name='password']")));
+        WebElement passwordElement = wait.until(ExpectedConditions.presenceOfElementLocated(By.xpath("//input[@data-componentname='password']")));
         //在*******填你密码
         passwordElement.sendKeys("liu123456L");
 
