@@ -46,10 +46,17 @@
         <version>0.5.2</version>
       </dependency>
       <dependency>
-          　　<groupId>org.seleniumhq.selenium</groupId>
-          　　<artifactId>selenium-java</artifactId>
-          　　<version>3.4.0</version>
+          <groupId>org.seleniumhq.selenium</groupId>
+          <artifactId>selenium-java</artifactId>
+          <version>3.4.0</version>
       </dependency>
+      <!-- https://mvnrepository.com/artifact/net.java.dev.jna/jna -->
+      <dependency>
+          <groupId>net.java.dev.jna</groupId>
+          <artifactId>jna</artifactId>
+          <version>4.1.0</version>
+      </dependency>
+
       <!-- https://mvnrepository.com/artifact/org.seleniumhq.selenium/selenium-remote-driver -->
       <dependency>
           <groupId>org.seleniumhq.selenium</groupId>
@@ -64,15 +71,15 @@
       </dependency>
 
       <!-- https://mvnrepository.com/artifact/com.codeborne/phantomjsdriver -->
-      <dependency>
+      <!--<dependency>
           <groupId>com.codeborne</groupId>
           <artifactId>phantomjsdriver</artifactId>
           <version>1.4.3</version>
-      </dependency>
+      </dependency>-->
       <dependency>
           <groupId>com.github.detro</groupId>
-          <artifactId>ghostdriver</artifactId>
-          <version>2.1.0</version>
+          <artifactId>phantomjsdriver</artifactId>
+          <version>1.2.0</version>
       </dependency>
       <dependency>
       <groupId>junit</groupId>
