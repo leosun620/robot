@@ -1,14 +1,15 @@
 package com.lq.spider;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.List;
 import java.util.Set;
 
-import org.openqa.selenium.By;
-import org.openqa.selenium.Cookie;
-import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebElement;
+import org.apache.commons.io.FileUtils;
+import org.openqa.selenium.*;
 import org.openqa.selenium.chrome.ChromeDriver;
 
+import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.phantomjs.PhantomJSDriver;
 import org.openqa.selenium.phantomjs.PhantomJSDriverService;
 import org.openqa.selenium.remote.DesiredCapabilities;
@@ -43,26 +44,44 @@ public class SpiderDemo implements PageProcessor {
         page.putField("color",page.getHtml().xpath("//img[@class='bg-medium-grey']"));
     }
 
+    private void takesScreenshot(WebDriver driver,String name){
+        File scrFile = ((TakesScreenshot) driver).getScreenshotAs(OutputType.FILE);
+        try {
+            FileUtils.copyFile(scrFile, new File("D:\\temp\\"+name));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
     //使用 selenium 来模拟用户的登录获取cookie信息
     public void login()
     {
-        //WebDriver driver = new ChromeDriver();
-        WebDriver driver = getPhantomJSDriver();
+
+        ChromeOptions options = new ChromeOptions();
+        options.addArguments("headless");
+        //WebDriver driver = getPhantomJSDriver();
+        WebDriver driver = new ChromeDriver(options);
         driver.get("https://www.nike.com/cn/zh_cn/");
+        driver.manage().window().maximize();
+        takesScreenshot(driver,"index.png");
         WebDriverWait wait = new WebDriverWait(driver, 10);
-        wait.until(ExpectedConditions.presenceOfElementLocated(By.className("login-text")));
+        WebElement webElement = wait.until(ExpectedConditions.elementToBeClickable(By.className("login-text")));
 
-        //PhantomJSDriver.(driver);
+        webElement.click();
+        takesScreenshot(driver,"login.png");
 
-        driver.findElement(By.className("login-text")).click();
+        WebElement element = driver.findElement(By.xpath("//a[contains(text(),'使用电子邮件登录')]"));
+        if(element != null){
+            element.click();
+        }
 
         //在******中填你的用户名
-        wait.until(ExpectedConditions.presenceOfElementLocated(By.xpath("//input[@data-componentname='emailAddress']")));
-        WebElement userNameElement = driver.findElement(By.xpath("//input[@data-componentname='emailAddress']"));
+        //wait.until(ExpectedConditions.presenceOfElementLocated(By.xpath("//input[@data-componentname='emailAddress']")));
+        WebElement userNameElement = wait.until(ExpectedConditions.elementToBeClickable(By.xpath("//input[@name='emailAddress']")));
         System.out.println(userNameElement.toString());
         userNameElement.sendKeys("tianshi139803@126.com");
-        wait.until(ExpectedConditions.presenceOfElementLocated(By.xpath("//input[@data-componentname='password']")));
-        WebElement passwordElement = driver.findElement(By.xpath("//input[@data-componentname='password']"));
+        //wait.until(ExpectedConditions.presenceOfElementLocated(By.xpath("//input[@data-componentname='password']")));
+        WebElement passwordElement = wait.until(ExpectedConditions.elementToBeClickable(By.xpath("//input[@name='password']")));
         //在*******填你密码
         passwordElement.sendKeys("liu123456L");
 
@@ -98,14 +117,14 @@ public class SpiderDemo implements PageProcessor {
         dcaps.setCapability("phantomjs.page.settings.userAgent", "Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/62.0.3202.75 Safari/537.36");
         dcaps.setCapability("phantomjs.page.customHeaders.User-Agent", "Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/62.0.3202.75 Safari/537.36");
         //驱动支持
-        dcaps.setCapability(PhantomJSDriverService.PHANTOMJS_EXECUTABLE_PATH_PROPERTY,"E:\\git\\phantomjs-2.1.1-windows\\phantomjs-2.1.1-windows\\bin\\phantomjs.exe");
+        dcaps.setCapability(PhantomJSDriverService.PHANTOMJS_EXECUTABLE_PATH_PROPERTY,"D:\\资料\\爬虫\\phantomjs-2.1.1-windows\\phantomjs-2.1.1-windows\\bin\\phantomjs.exe");
 
         PhantomJSDriver driver = new PhantomJSDriver(dcaps);
         return  driver;
     }
     public static void main(String[] args){
         SpiderDemo miai = new SpiderDemo();
-        System.setProperty("webdriver.chrome.driver","E:\\git\\chromedriver_win32\\chromedriver.exe");
+        System.setProperty("webdriver.chrome.driver","D:\\资料\\爬虫\\chromedriver.exe");
         //调用selenium，进行模拟登录
         miai.login();
         Spider.create(miai)
