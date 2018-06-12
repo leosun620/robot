@@ -5,6 +5,8 @@ import org.openqa.selenium.Cookie;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.chrome.ChromeOptions;
+import org.openqa.selenium.phantomjs.PhantomJSDriver;
 import us.codecraft.webmagic.Page;
 import us.codecraft.webmagic.Site;
 import us.codecraft.webmagic.Spider;
@@ -24,7 +26,7 @@ public class TestSpider implements PageProcessor {
     @Override
     public void process(Page page) {
         //获取用户的id
-        List<String> uls = page.getHtml().xpath("//ul/li").all();
+        List<String> uls = page.getHtml().xpath("//table[@class='huiy']").all();
         for(String ul : uls) {
             System.out.println(ul);
 
@@ -37,7 +39,10 @@ public class TestSpider implements PageProcessor {
     //使用 selenium 来模拟用户的登录获取cookie信息
     public void login()
     {
-        WebDriver driver = new ChromeDriver();
+        ChromeOptions options = new ChromeOptions();
+        options.addArguments("headless");
+        //WebDriver driver = new ChromeDriver(options);
+        WebDriver driver = SpiderDemo.getPhantomJSDriver();
         driver.get("http://11.33.186.42:8008/signInfo/faces/login.jsp");
 
         //在******中填你的用户名
@@ -51,7 +56,8 @@ public class TestSpider implements PageProcessor {
 
         //模拟点击登录按钮
         driver.findElement(By.id("loginform:loginBtn")).click();
-
+        driver.get("http://11.33.186.42:8008/signInfo/faces/check/person_detail.jsp");
+        driver.findElement(By.id("form1:look_detail")).click();
         //获取cookie信息
         cookies = driver.manage().getCookies();
         driver.close();
@@ -70,11 +76,11 @@ public class TestSpider implements PageProcessor {
 
     public static void main(String[] args){
         TestSpider miai = new TestSpider();
-        System.setProperty("webdriver.chrome.driver","C:\\Program Files (x86)\\Google\\Chrome\\Application\\chromedriver.exe");
+        System.setProperty("webdriver.chrome.driver","D:\\资料\\爬虫\\chromedriver.exe");
         //调用selenium，进行模拟登录
         miai.login();
         Spider.create(miai)
-                .addUrl("http://11.33.186.42:8008/signInfo/faces/login.jsp")
+                .addUrl("http://11.33.186.42:8008/signInfo/faces/check/person_detail.jsp")
                 .run();
     }
 }

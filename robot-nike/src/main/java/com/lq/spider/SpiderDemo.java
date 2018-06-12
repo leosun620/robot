@@ -57,10 +57,8 @@ public class SpiderDemo implements PageProcessor {
     public void login()
     {
 
-        ChromeOptions options = new ChromeOptions();
-        options.addArguments("headless");
-        //WebDriver driver = getPhantomJSDriver();
-        WebDriver driver = new ChromeDriver(options);
+        WebDriver driver = getPhantomJSDriver();
+        //WebDriver driver = getChromeDriver();
         driver.get("https://www.nike.com/cn/zh_cn/");
         driver.manage().window().maximize();
         takesScreenshot(driver,"index.png");
@@ -102,6 +100,18 @@ public class SpiderDemo implements PageProcessor {
 
         return site.addHeader("User-Agent", "Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/62.0.3202.75 Safari/537.36");
     }
+
+    public static WebDriver getChromeDriver(){
+        ChromeOptions options = new ChromeOptions();
+        options.addArguments("headless");
+        options.addArguments("user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/67.0.3396.79 Safari/537.36");
+        DesiredCapabilities dcaps = new DesiredCapabilities();
+        dcaps.setCapability("headless",true);
+        dcaps.setCapability("user-agent","Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/67.0.3396.79 Safari/537.36");
+        WebDriver driver = new ChromeDriver(options);
+        return driver;
+    }
+
     public static PhantomJSDriver getPhantomJSDriver(){
         //设置必要参数
         DesiredCapabilities dcaps = new DesiredCapabilities();
@@ -114,8 +124,8 @@ public class SpiderDemo implements PageProcessor {
         //js支持
         dcaps.setJavascriptEnabled(true);
         //设置参数
-        dcaps.setCapability("phantomjs.page.settings.userAgent", "Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/62.0.3202.75 Safari/537.36");
-        dcaps.setCapability("phantomjs.page.customHeaders.User-Agent", "Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/62.0.3202.75 Safari/537.36");
+        //dcaps.setCapability("phantomjs.page.settings.userAgent", "Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/62.0.3202.75 Safari/537.36");
+        dcaps.setCapability("user-agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/67.0.3396.79 Safari/537.36");
         //驱动支持
         dcaps.setCapability(PhantomJSDriverService.PHANTOMJS_EXECUTABLE_PATH_PROPERTY,"D:\\资料\\爬虫\\phantomjs-2.1.1-windows\\phantomjs-2.1.1-windows\\bin\\phantomjs.exe");
 
