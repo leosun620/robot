@@ -64,15 +64,33 @@ public class SpiderDemo implements PageProcessor {
         takesScreenshot(driver,"index.png");
         WebDriverWait wait = new WebDriverWait(driver, 10);
         WebElement webElement = wait.until(ExpectedConditions.elementToBeClickable(By.className("login-text")));
-
+        System.out.println(webElement.getText());
         webElement.click();
         takesScreenshot(driver,"login.png");
 
-        WebElement element = driver.findElement(By.xpath("//a[contains(text(),'使用电子邮件登录')]"));
-        if(element != null){
-            element.click();
+        List<WebElement> elements = driver.findElements(By.tagName("a"));
+        for(int i=0; i<elements.size();i++) {
+            WebElement element = elements.get(i);
+            System.out.println(i+" "+element.getText());
+            if (element != null && element.getText().contains("使用电子邮件登录")) {
+                element.click();
+                break;
+            }
         }
 
+        try{
+            input(wait,driver);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+
+
+        //获取cookie信息
+        cookies = driver.manage().getCookies();
+        driver.close();
+    }
+
+    private  void input(WebDriverWait wait,WebDriver driver){
         //在******中填你的用户名
         //wait.until(ExpectedConditions.presenceOfElementLocated(By.xpath("//input[@data-componentname='emailAddress']")));
         WebElement userNameElement = wait.until(ExpectedConditions.presenceOfElementLocated(By.xpath("//input[@data-componentname='emailAddress']")));
@@ -85,10 +103,6 @@ public class SpiderDemo implements PageProcessor {
 
         //模拟点击登录按钮
         driver.findElement(By.xpath("//input[@value='登录']")).click();
-
-        //获取cookie信息
-        cookies = driver.manage().getCookies();
-        driver.close();
     }
     @Override
     public Site getSite() {
