@@ -118,14 +118,19 @@ public class SpiderDemo implements PageProcessor {
         //ssl证书支持
         dcaps.setCapability("acceptSslCerts", true);
         //截屏支持
-        dcaps.setCapability("takesScreenshot", false);
+        dcaps.setCapability("takesScreenshot", true);
+        dcaps.setBrowserName("Chrome");
         //css搜索支持
         dcaps.setCapability("cssSelectorsEnabled", true);
         //js支持
         dcaps.setJavascriptEnabled(true);
+        String [] phantomJsArgs = {"--debug=true"};
+        dcaps.setCapability(
+                PhantomJSDriverService.PHANTOMJS_GHOSTDRIVER_CLI_ARGS,
+                phantomJsArgs);
         //设置参数
         //dcaps.setCapability("phantomjs.page.settings.userAgent", "Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/62.0.3202.75 Safari/537.36");
-        dcaps.setCapability("user-agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/67.0.3396.79 Safari/537.36");
+        dcaps.setCapability("phantomjs.page.settings.userAgent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/67.0.3396.79 Safari/537.36");
         //驱动支持
         dcaps.setCapability(PhantomJSDriverService.PHANTOMJS_EXECUTABLE_PATH_PROPERTY,"D:\\资料\\爬虫\\phantomjs-2.1.1-windows\\phantomjs-2.1.1-windows\\bin\\phantomjs.exe");
 
