@@ -59,11 +59,23 @@ public class NikeSpider {
 
         }
         takesScreenshot(driver,"product-size.png");
-        sizeElements.get(1).click();
+        sizeElements.get(1).findElement(By.tagName("button")).click();
 
-        driver.findElement(By.xpath("//button[@data-qa='feed-buy-cta']")).click();
+        //driver.findElement(By.xpath("//button[@data-qa='feed-buy-cta']")).click();
+        try {
+            Thread.sleep(1000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        driver.findElement(By.xpath("//button[@data-qa='add-to-jcart']")).click();
         takesScreenshot(driver,"product-addrss.png");
+
         System.out.println("end:"+new Date());
+        try {
+            Thread.sleep(10000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
     }
 
     public Set<Cookie> login(){
@@ -71,7 +83,7 @@ public class NikeSpider {
         driver.get("https://www.nike.com/cn/zh_cn/");
         driver.manage().window().maximize();
         takesScreenshot(driver,"index.png");
-        WebDriverWait wait = new WebDriverWait(driver, 10);
+        WebDriverWait wait = new WebDriverWait(driver, 15);
         WebElement webElement = wait.until(ExpectedConditions.elementToBeClickable(By.className("login-text")));
         System.out.println(webElement.getText());
         webElement.click();
@@ -85,6 +97,10 @@ public class NikeSpider {
         }catch (Exception e){
             e.printStackTrace();
         }
+        WebElement userElement = wait.until(ExpectedConditions.elementToBeClickable(By.xpath("//span[@js-hook='username']")));
+        if(userElement!=null){
+            System.out.println("登陆成功:"+userElement.getText());
+        }
         takesScreenshot(driver,"login-ed.png");
 
         //获取cookie信息
@@ -97,8 +113,9 @@ public class NikeSpider {
             return chromeDriver;
         }
         ChromeOptions options = new ChromeOptions();
-        options.addArguments("headless");
+        //options.addArguments("headless");
         options.addArguments("user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/67.0.3396.79 Safari/537.36");
+        //options.addArguments("user-data-dir=C:\\Users\\liuqiang\\AppData\\Local\\Google\\Chrome\\User Data");
         DesiredCapabilities dcaps = new DesiredCapabilities();
         dcaps.setCapability("headless",true);
         dcaps.setCapability("--gpu",true);
